@@ -23,6 +23,9 @@
  * SOFTWARE.
  */
 
+/*!@file uopt.h
+ * @author uael
+ */
 #ifndef __UOPT_H
 # define __UOPT_H
 
