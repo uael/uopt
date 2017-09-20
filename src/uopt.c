@@ -59,9 +59,10 @@ opts_dtor(opts_t *self) {
 
 ret_t
 opts_parse(opts_t *self, void *app_ptr, i32_t argc, i8_t **argv) {
-  i8_t *arg, key, *lkey, *val, errmsg[U8_MAX];
+  i8_t *arg, key, *lkey, *val;
   opt_t *opt;
   i32_t i;
+  err_t err;
 
   if (argc) {
     if ((self->program = strrchr(argv[0], '/'))) {
@@ -76,33 +77,33 @@ opts_parse(opts_t *self, void *app_ptr, i32_t argc, i8_t **argv) {
         if (*(arg + 1) == '-') {
           opt = opts_lget(self, lkey = arg + 2);
           if (opt == nil) {
-            sprintf(errmsg, "unrecognized command line option ‘%s’", lkey);
-            goto opts_warning;
+            err = warningf("unrecognized command line option ‘%s’", lkey);
+            goto fail;
           }
           if (opt->kval) {
             if (i < argc - 1) {
               val = argv[++i];
             } else {
-              sprintf(errmsg, "missing argument for command line option ‘%s’",
+              err = warningf("missing argument for command line option ‘%s’",
                 lkey
               );
-              goto opts_error;
+              goto fail;
             }
             if (!opt->global && opt->match) {
-              sprintf(errmsg,
+              err = warningf(
                 "duplicate value for command line option ‘%s’: ‘%s’", lkey, val
               );
-              goto opts_warning;
+              goto fail;
             }
           } else if (!opt->global && opt->match) {
-            sprintf(errmsg, "duplicate command line option ‘%s’", lkey);
-            goto opts_warning;
+            err = warningf("duplicate command line option ‘%s’", lkey);
+            goto fail;
           }
         } else {
           opt = opts_get(self, key = arg[1]);
           if (opt == nil) {
-            sprintf(errmsg, "unrecognized command line option ‘%c’", key);
-            goto opts_warning;
+            err = warningf("unrecognized command line option ‘%c’", key);
+            goto fail;
           }
           if (opt->kval) {
             if (arg[2] != '\0') {
@@ -110,41 +111,35 @@ opts_parse(opts_t *self, void *app_ptr, i32_t argc, i8_t **argv) {
             } else if (i < argc - 1) {
               val = argv[++i];
             } else {
-              sprintf(errmsg, "missing argument for command line option ‘%c’",
+              err = warningf("missing argument for command line option ‘%c’",
                 key
               );
-              goto opts_error;
+              goto fail;
             }
             if (!opt->global && opt->match) {
-              sprintf(errmsg,
+              err = warningf(
                 "duplicate value for command line option ‘%c’: ‘%s’", key, val
               );
-              goto opts_warning;
+              goto fail;
             }
           } else if (arg[2] != '\0') {
-            sprintf(errmsg, "unrecognized command line option ‘%c’", key);
-            goto opts_warning;
+            err = warningf("unrecognized command line option ‘%c’", key);
+            goto fail;
           } else if (!opt->global && opt->match) {
-            sprintf(errmsg, "duplicate command line option ‘%c’", key);
-            goto opts_warning;
+            err = warningf( "duplicate command line option ‘%c’", key);
+            goto fail;
           }
         }
         if (opt->callback == nil || opt->callback(app_ptr, val) == 0) {
           opt->match = true;
         }
       } else if (self->callback && (self->callback(app_ptr, arg) != 0)) {
-        sprintf(errmsg, "invalid command line argument ‘%s’", arg);
-        goto opts_error;
+        err = errorf("invalid command line argument ‘%s’", arg);
+        goto fail;
       }
       continue;
-      opts_warning:
-      if (err_stack_push(&self->errs, err_usr(ERRLVL_WARNING, errmsg))
-        == RET_ERRNO) {
-        return RET_ERRNO;
-      }
-      continue;
-      opts_error:
-      if (err_stack_push(&self->errs, err_usr(ERRLVL_ERROR, errmsg))
+      fail:
+      if (err_stack_push(&self->errs, err)
         == RET_ERRNO) {
         return RET_ERRNO;
       }

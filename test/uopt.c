@@ -180,5 +180,6 @@ CUTEST(opt, duplicate) {
   ASSERT(memcmp(err.msg, STRNSIZE("duplicate value for command line option ‘o’: ‘bla’")) == 0);
   err = self->opts.errs.buf[4];
   ASSERT(memcmp(err.msg, STRNSIZE("duplicate command line option ‘S’")) == 0);
+  err_stack_dump(&self->opts.errs, stdout);
   return CUTE_SUCCESS;
 }
