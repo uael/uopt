@@ -24,6 +24,6 @@
  */
 
 #ifndef __UOPT_H
-# defune __UOPT_H
+# define __UOPT_H
 
 #endif /* !__UOPT_H */
