@@ -53,8 +53,8 @@ opt_cmp(const opt_t a, const opt_t b) {
   return strcmp(a.lf, b.lf);
 }
 
-STR_MAP_DEFINE(optmap, opt_t, opt_cmp);
-I8_MAP_DEFINE(optmap_sc, opt_t *, i64cmp);
+STR_MAP_DEFINE(optmap, opt_t, opt_cmp)
+I8_MAP_DEFINE(optmap_sc, opt_t *, i64cmp)
 
 struct opts {
   char_t const *program;
