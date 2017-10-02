@@ -29,9 +29,7 @@ void
 opts_ctor(opts_t *self, opt_t *opts, optcb_t callback) {
   u32_t it;
 
-  *self = (opts_t) {
-    .callback = callback
-  };
+  self->callback = callback;
   err_stack_ctor(&self->errs);
   if (opts) {
     while (opts->lf) {
@@ -58,8 +56,8 @@ opts_dtor(opts_t *self) {
 }
 
 ret_t
-opts_parse(opts_t *self, void *app_ptr, i32_t argc, i8_t **argv) {
-  i8_t *arg, key, *lkey, *val;
+opts_parse(opts_t *self, void *app_ptr, i32_t argc, char_t **argv) {
+  char_t *arg, key, *lkey, *val;
   opt_t *opt;
   i32_t i;
   err_t err;

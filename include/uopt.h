@@ -37,7 +37,7 @@ typedef struct opts opts_t;
 typedef ret_t (*optcb_t)(void *app, const char *val);
 
 struct opt {
-  i8_t f, *lf, *help;
+  char_t f, *lf, *help;
   optcb_t callback;
   bool_t kval, global, match;
 };
@@ -57,7 +57,7 @@ STR_MAP_DEFINE(optmap, opt_t, opt_cmp);
 I8_MAP_DEFINE(optmap_sc, opt_t *, i64cmp);
 
 struct opts {
-  i8_t const *program;
+  char_t const *program;
   optmap_t conf;
   optmap_sc_t shortcuts;
   optcb_t callback;
@@ -66,7 +66,7 @@ struct opts {
 
 __extern_c__
 static FORCEINLINE opt_t *
-opts_get(opts_t *opts, i8_t id) {
+opts_get(opts_t *opts, char_t id) {
   u32_t it;
 
   if (optmap_sc_get(&opts->shortcuts, id, &it)) {
@@ -77,7 +77,7 @@ opts_get(opts_t *opts, i8_t id) {
 
 __extern_c__
 static FORCEINLINE opt_t *
-opts_lget(opts_t *opts, const char *id) {
+opts_lget(opts_t *opts, char_t const *id) {
   unsigned it;
 
   if (optmap_get(&opts->conf, id, &it)) {
@@ -93,6 +93,6 @@ __extern_c__ void
 opts_dtor(opts_t *self);
 
 __extern_c__ ret_t
-opts_parse(opts_t *self, void *app_ptr, i32_t argc, i8_t **argv);
+opts_parse(opts_t *self, void *app_ptr, i32_t argc, char_t **argv);
 
 #endif /* !__UOPT_H */

@@ -13,6 +13,9 @@ endif ()
 set(CMAKE_MODULE_PATH "${CMAKE_CACHEFILE_DIR}/cmake")
 include(ProjectDependency)
 
+set(CMAKE_C_STANDARD 99)
+set(BUILD_SHARED_LIBS OFF)
+
 project(uopt C)
 project_dependency(uds GIT_REPOSITORY https://github.com/uael/uds.git)
 
@@ -27,6 +30,21 @@ set(uopt_HDR ${uopt_INC_DIR}/uopt.h)
 add_library(uopt ${uopt_SRCS} ${uopt_HDRS} ${uopt_HDR})
 target_include_directories(uopt PUBLIC ${uopt_INC_DIR})
 target_link_libraries(uopt PUBLIC uds)
+
+set(CMAKE_C_FLAGS "")
+set(CMAKE_C_FLAGS_DEBUG "")
+set(CMAKE_C_FLAGS_RELEASE "")
+
+if (MSVC)
+  target_compile_options(uopt
+    PRIVATE /MT$<$<CONFIG:Debug>:d> /Oy /Za
+    PRIVATE /O$<$<CONFIG:Debug>:d>$<$<CONFIG:Release>:x>)
+else ()
+  target_compile_options(uopt
+    PRIVATE -Wall -Werror -Wextra -fomit-frame-pointer
+    PRIVATE -Wno-missing-field-initializers
+    PRIVATE -O$<$<CONFIG:Debug>:0 -g3>$<$<CONFIG:Release>:3>)
+endif ()
 
 get_directory_property(uopt_PARENT PARENT_DIRECTORY)
 if (NOT ${uopt_PARENT})
