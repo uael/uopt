@@ -34,30 +34,30 @@ typedef struct my_app my_app_t;
 
 struct my_app {
   bool_t echo, pp;
-  char_t const *output;
+  char_t __const *output;
   strvec_t inputs;
 };
 
 ret_t
-my_app_echo(my_app_t *app, UNUSED char_t const *val) {
+my_app_echo(my_app_t *app, UNUSED char_t __const *val) {
   app->echo = true;
   return RET_SUCCESS;
 }
 
 ret_t
-my_app_pp(my_app_t *app, UNUSED char_t const *val) {
+my_app_pp(my_app_t *app, UNUSED char_t __const *val) {
   app->pp = true;
   return RET_SUCCESS;
 }
 
 ret_t
-my_app_set_output(my_app_t *app, char_t const *val) {
+my_app_set_output(my_app_t *app, char_t __const *val) {
   app->output = val;
   return RET_SUCCESS;
 }
 
 ret_t
-my_app_add_input(my_app_t *app, char_t const *val) {
+my_app_add_input(my_app_t *app, char_t __const *val) {
   return strvec_push(&app->inputs, (char_t *) val);
 }
 

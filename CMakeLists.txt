@@ -37,8 +37,9 @@ set(CMAKE_C_FLAGS_RELEASE "")
 
 if (MSVC)
   target_compile_options(uopt
-    PRIVATE /MT$<$<CONFIG:Debug>:d> /Oy /Za
-    PRIVATE /O$<$<CONFIG:Debug>:d>$<$<CONFIG:Release>:x>)
+    PUBLIC /MT$<$<CONFIG:Debug>:d> /Oy /Za /W3
+    PUBLIC /D_CRT_SECURE_NO_WARNINGS
+    PUBLIC /O$<$<CONFIG:Debug>:d>$<$<CONFIG:Release>:x>)
 else ()
   target_compile_options(uopt
     PRIVATE -Wall -Werror -Wextra -fomit-frame-pointer -ansi
@@ -47,12 +48,12 @@ else ()
 endif ()
 
 get_directory_property(uopt_PARENT PARENT_DIRECTORY)
-if (NOT ${uopt_PARENT})
+if (NOT uopt_PARENT)
   set(uopt_DEVEL TRUE)
-elseif (NOT ${uopt_DEVEL})
+elseif (NOT uopt_DEVEL)
   set(uopt_DEVEL FALSE)
 endif ()
-if (${uopt_DEVEL} AND EXISTS ${uopt_TEST_DIR})
+if (uopt_DEVEL AND EXISTS ${uopt_TEST_DIR})
   project_dependency(cute GIT_REPOSITORY https://github.com/uael/cute.git)
   if (NOT uopt_PARENT)
     enable_testing()
@@ -61,10 +62,10 @@ if (${uopt_DEVEL} AND EXISTS ${uopt_TEST_DIR})
   file(GLOB uopt_TEST_SRCS ${uopt_TEST_SRCS} ${uopt_TEST_DIR}/*.c)
   foreach (uopt_TEST_SRC ${uopt_TEST_SRCS})
     get_filename_component(uopt_TEST_NAME ${uopt_TEST_SRC} NAME_WE)
-    add_executable(test_${uopt_TEST_NAME} ${uopt_TEST_SRC})
-    add_dependencies(test_${uopt_TEST_NAME} uopt cute)
-    target_link_libraries(test_${uopt_TEST_NAME} uopt cute)
-    add_test(${uopt_TEST_NAME} test_${uopt_TEST_NAME})
+    add_executable(test_uopt_${uopt_TEST_NAME} ${uopt_TEST_SRC})
+    add_dependencies(test_uopt_${uopt_TEST_NAME} uopt cute)
+    target_link_libraries(test_uopt_${uopt_TEST_NAME} uopt cute)
+    add_test(${uopt_TEST_NAME} test_uopt_${uopt_TEST_NAME})
   endforeach ()
 endif ()
 
