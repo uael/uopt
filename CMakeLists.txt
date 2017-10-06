@@ -42,7 +42,7 @@ if (MSVC)
     PUBLIC /O$<$<CONFIG:Debug>:d>$<$<CONFIG:Release>:x>)
 else ()
   target_compile_options(uopt
-    PRIVATE -Wall -Werror -Wextra -fomit-frame-pointer -ansi
+    PRIVATE -Wall -Werror -Wextra -fomit-frame-pointer -ansi -pedantic -pedantic
     PRIVATE -Wno-missing-field-initializers
     PRIVATE -O$<$<CONFIG:Debug>:0 -g3>$<$<CONFIG:Release>:3>)
 endif ()
